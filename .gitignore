@@ -1,0 +1,13 @@
+.env
+.DS_Store
+/.idea
+/deploy/_output
+/experiment
+/Gemfile*
+/vendor
+/credential
+public/*
+!public/upload/
+public/upload/*
+!public/upload/core
+public/upload/core/*
