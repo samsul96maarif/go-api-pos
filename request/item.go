@@ -22,3 +22,10 @@ type CreateItemRequest struct {
 type GetItemPaginate struct {
 	BaseRequest
 }
+
+type UpdateItemRequest struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description"`
+	Qty         uint   `json:"qty"`
+	Id          uint   `json:"id"`
+}

@@ -7,8 +7,10 @@ package model
 
 type ItemPrice struct {
 	BaseModel
-	Name        string `json:"name"`
-	Code string `json"code"`
-	Price uint `json:"price"`
-	CreatedBy   *uint  `json:"created_by"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	CreatedBy *uint  `json:"created_by"`
+	ItemId    uint   `json:"item_id"`
+	Price     uint   `json:"price"`
+	IsDefault bool   `json:"is_default"`
 }

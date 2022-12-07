@@ -10,6 +10,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"samsul96maarif/github.com/go-api-app/request"
 
 	"samsul96maarif/github.com/go-api-app/lib"
@@ -62,7 +63,12 @@ func (repo *Repository) GetItemPricePaginate(ctx context.Context, where map[stri
 		tx = repo.db
 	}
 
-	err = tx.Where(where).Order(order_by).Offset(offset).Limit(int(limit)).Find(&entities).Error
+	stmt := tx.Where(where)
+	if req.Keyword != "" {
+		search := fmt.Sprintf("%%%s%%", req.Keyword)
+		stmt = stmt.Where("name ILIKE ? OR code ILIKE ?", search, search)
+	}
+	err = stmt.Order(order_by).Offset(offset).Limit(int(limit)).Find(&entities).Error
 	if err != nil {
 		logger.Error(ctx, "Error GetItemPaginate", map[string]interface{}{
 			"error": err,
@@ -75,13 +81,17 @@ func (repo *Repository) GetItemPricePaginate(ctx context.Context, where map[stri
 	return entities, nil
 }
 
-func (repo *Repository) GetItemPriceCount(ctx context.Context, where map[string]interface{}) (total int64, err error) {
+func (repo *Repository) GetItemPriceCount(ctx context.Context, where map[string]interface{}, keyword string) (total int64, err error) {
 	tx, ok := ctx.Value("Trx").(*lib.Database)
 	if !ok {
 		tx = repo.db
 	}
 
 	statement := tx.Model(&model.ItemPrice{}).Where(where)
+	if keyword != "" {
+		search := fmt.Sprintf("%%%s%%", keyword)
+		statement = statement.Where("name ILIKE ? OR ILIKE ?", search, search)
+	}
 
 	err = statement.Count(&total).Error
 	if err != nil {
@@ -92,4 +102,28 @@ func (repo *Repository) GetItemPriceCount(ctx context.Context, where map[string]
 	}
 
 	return total, err
+}
+
+func (repo *Repository) UpdateItemPrice(ctx context.Context, entity *model.ItemPrice, updates map[string]interface{}) error {
+	tx, ok := ctx.Value("Trx").(*lib.Database)
+	if !ok {
+		tx = repo.db
+	}
+	err := tx.Model(entity).Updates(updates).Error
+	if err != nil {
+		logger.Error(ctx, "Error updateItemPrice", map[string]interface{}{
+			"error": err,
+			"tags":  []string{"repo", "item_prices"},
+		})
+	}
+	return err
+}
+
+func (repo *Repository) DeleteItemPrice(ctx context.Context, where map[string]interface{}) error {
+	tx, ok := ctx.Value("Trx").(*lib.Database)
+	if !ok {
+		tx = repo.db
+	}
+	err := tx.Where(where).Delete(&model.ItemPrice{}).Error
+	return err
 }

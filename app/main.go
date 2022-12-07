@@ -1,3 +1,8 @@
+/*
+ * Author: Samsul Ma'arif <samsulma828@gmail.com>
+ * Copyright (c) 2022.
+ */
+
 package main
 
 import (
@@ -46,6 +51,7 @@ func main() {
 
 	apiRoute.AddAuthRoute()
 	apiRoute.AddItemRoute()
+	apiRoute.AddItemPriceRoute()
 	apiRoute.AddSuperAdminUserRoute()
 
 	headerOk := handlers.AllowedHeaders([]string{"Accept", "Content-Type", "Authorization"})

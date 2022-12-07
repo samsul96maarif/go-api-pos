@@ -111,8 +111,8 @@ func (handler *Handler) ValidateRolesMiddleware(next http.Handler, allowedRoleID
 			writeError(w, lib.ErrorForbidden)
 			return
 		}
-
-		next.ServeHTTP(w, r)
+		ctx := context.WithValue(context.Background(), "User", claim)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
@@ -141,7 +141,7 @@ func (handler *Handler) AuthMiddleware(next http.Handler) http.Handler {
 
 		email, _ := claims["email"].(string)
 		claimRoles, _ := claims["roles"].([]interface{})
-		userId, _ := claims["user_id"].(uint)
+		userIdFloat, _ := claims["user_id"].(float64)
 		var roles []int
 		for _, val := range claimRoles {
 			var valInt int
@@ -161,7 +161,7 @@ func (handler *Handler) AuthMiddleware(next http.Handler) http.Handler {
 		customClaim := lib.MyClaim{
 			Roles:  roles,
 			Email:  email,
-			UserId: userId,
+			UserId: uint(int(userIdFloat)),
 		}
 
 		ctx := context.WithValue(context.Background(), "User", customClaim)
@@ -169,6 +169,7 @@ func (handler *Handler) AuthMiddleware(next http.Handler) http.Handler {
 
 		logger.Info(ctx, "claim", map[string]interface{}{
 			"claims": claims,
+			"custom": customClaim,
 		})
 
 		next.ServeHTTP(w, r)

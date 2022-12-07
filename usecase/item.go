@@ -37,7 +37,7 @@ func (usecase *Usecase) GetItemPaginate(ctx context.Context, req request.GetItem
 		search := fmt.Sprintf("%%%s%%", req.Keyword)
 		where["name LIKE ?"] = search
 	}
-	var entities []model.Item
+	var entities []model.ItemWithDefaultPrice
 	var total int64
 	entities, err = usecase.repo.GetItemPaginate(ctx, where, req.BaseRequest, "name asc")
 	if err != nil {
@@ -46,7 +46,7 @@ func (usecase *Usecase) GetItemPaginate(ctx context.Context, req request.GetItem
 			"tags":  []string{"repo", "usecase", "items", "get"},
 		})
 	}
-	total, err = usecase.repo.GetItemCount(ctx, where)
+	total, err = usecase.repo.GetItemCount(ctx, where, req.Keyword)
 	if err != nil {
 		logger.Error(ctx, "Error GetItemCount", map[string]interface{}{
 			"error": err,
@@ -63,5 +63,19 @@ func (usecase *Usecase) GetItemPaginate(ctx context.Context, req request.GetItem
 
 func (usecase *Usecase) FindItem(ctx context.Context, id uint) (entity model.Item, err error) {
 	entity, err = usecase.repo.FindItem(ctx, map[string]interface{}{"id": id}, "created_at asc")
+	return entity, err
+}
+
+func (u *Usecase) DeleteItem(ctx context.Context, id uint) error {
+	err := u.repo.DeleteItem(ctx, map[string]interface{}{"id": id})
+	return err
+}
+
+func (usecase *Usecase) UpdateItem(ctx context.Context, req request.UpdateItemRequest) (entity model.Item, err error) {
+	entity, err = usecase.repo.UpdateItem(ctx, map[string]interface{}{"id": req.Id}, map[string]interface{}{
+		"name":        req.Name,
+		"description": req.Description,
+		"qty":         req.Qty,
+	})
 	return entity, err
 }

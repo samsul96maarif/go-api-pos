@@ -13,6 +13,7 @@ CREATE TABLE item_prices (
     name varchar(255),
     code text,
     price int,
+    is_default bool DEFAULT FALSE,
     created_by int,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -6,7 +6,7 @@
 package request
 
 type BaseRequest struct {
-	Sorts   []string `json:"sorts,omitempty;query:sort"`
+	Sorts   []string `json:"sorts,omitempty;query:sorts"`
 	Keyword string   `json:"keyword,omitempty;query:keyword"`
 	Page    uint     `json:"page,omitempty;query:page"`
 	Limit   uint     `json:"limit,omitempty;query:limit"`

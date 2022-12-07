@@ -12,6 +12,9 @@ import (
 	"net/http"
 	goapiapp "samsul96maarif/github.com/go-api-app"
 	"samsul96maarif/github.com/go-api-app/lib"
+	"samsul96maarif/github.com/go-api-app/request"
+	"strconv"
+	"strings"
 )
 
 type Handler struct{ BE *goapiapp.BE }
@@ -38,6 +41,20 @@ type ErrorInfo struct {
 type ErrorBody struct {
 	Errors []ErrorInfo `json:"errors"`
 	Meta   interface{} `json:"meta"`
+}
+
+func GenerateBaseRequest(r *http.Request) request.BaseRequest {
+	page := r.URL.Query().Get("page")
+	perPage := r.URL.Query().Get("per_page")
+	sorts := r.URL.Query().Get("sorts")
+	perPageInt, _ := strconv.ParseUint(perPage, 10, 64)
+	pageInt, _ := strconv.ParseUint(page, 10, 64)
+	return request.BaseRequest{
+		Sorts:   strings.Split(sorts, ","),
+		Keyword: r.URL.Query().Get("keyword"),
+		Page:    uint(pageInt),
+		Limit:   uint(perPageInt),
+	}
 }
 
 func NewHandler(be *goapiapp.BE) Handler {

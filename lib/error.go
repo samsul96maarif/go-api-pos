@@ -49,6 +49,18 @@ var (
 		HttpCode: http.StatusUnprocessableEntity,
 	}
 
+	ErrorNotFound = CustomError{
+		Message:  "Not Found",
+		Code:     1003,
+		HttpCode: http.StatusNotFound,
+	}
+
+	ErrorCannotDeleteDefaultPrice = CustomError{
+		Message:  "Cannot Delete Default Price",
+		Code:     1004,
+		HttpCode: http.StatusUnprocessableEntity,
+	}
+
 	ErrorInternalServer = CustomError{
 		Message:  "Something went wrong",
 		Code:     1011,
